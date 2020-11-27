@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+
+{% block content %}
+        <div class="container my-3">
+            <table class="table">
+                <thead>
+                <tr class="text-center thead-dark">
+                    <th style="width:50%">제목</th>
+                    <th>글쓴이</th>
+                    <th>작성일시</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if book_list %}
+                {% for book in book_list %}
+                <tr class="text-center">
+                    <td class="text-center thead-dark">
+                        <a href="{% url 'polls1:detail' book.id %}">{{ book.subject }}</a>
+                        {% if book.read_set.count > 0 %}
+                        <span class="text-danger small ml-2">{{ book.read_set.count }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center thead-dark">{{ book.author.username }}</td>
+                    <td class="text-center thead-dark">{{ book.create_date }}</td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="10">질문이 없습니다.</td>
+                </tr>
+                {% endif %}
+                </tbody>
+            </table>
+
+
+    <ul class="pagination justify-content-center">
+        {% if book_list.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ book_list.previous_page_number }}">이전</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">이전</a>
+        </li>
+        {% endif %}
+        {% for page_number in book_list.paginator.page_range %}
+            {% if page_number >= book_list.number|add:-5 and page_number <= book_list.number|add:5 %}
+            <li class="page-item active" aria-current="page">
+                <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+            </li>
+            {% endif %}
+        {% endfor %}
+        {% if book_list.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ book_list.next_page_number }}">다음</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">다음</a>
+        </li>
+        {% endif %}
+    </ul>
+
+            <a href="{% url 'polls1:book_create' %}" class="btn btn-primary">질문 등록하기</a>
+        </div>
+{% endblock %}

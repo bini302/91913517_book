@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+
+{% block content %}
+<div class="container my-3">
+    <h2 class="border-bottom py-2">{{ book.subject }}</h2>
+    <div style="white-space: pre-line;">{{ book.content }}</div>
+    <div class="d-flex justify-content-end">
+        <div class="badge badge-light p-2 text-left">
+            {{ book.author.username }}
+        </div>
+        <div class="badge badge-light p-2 text-left">
+            {{ book.create_date }}
+        </div>
+    </div>
+        {% if request.user == book.author %}
+        <div class="my-3">
+            <a href="{% url 'polls1:book_modify' book.id  %}"
+               class="btn btn-sm btn-outline-secondary">수정</a>
+        </div>
+        {% endif %}
+    <h5 class="border-bottom my-3 py-2">{{ book.read_set.count }}개의 후기가 있습니다.</h5>
+    {% for read in book.read_set.all %}
+    <div class="card my-3">
+        <div class="card-body">
+            <div class="card-text" style="white-space: pre-line;">{{ read.content }}</div>
+            <div class="d-flex justify-content-end">
+                <div class="badge badge-light p-2">
+                    <div class="mb-2">{{ read.author.username }}</div>
+                    <div> {{ read.create_date }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+    <form action="{% url 'polls1:read_create' book.id %}" method="post" class="my-3">
+        {% csrf_token %}
+        <div class="form-group">
+            <textarea name="content" id="content" class="form-control" rows="10"></textarea>
+        </div>
+        <input type="submit" value="답변등록" class="btn btn-primary">
+    </form>
+{% endblock %}
+</div>
